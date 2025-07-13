@@ -1,0 +1,40 @@
+Application:
+    ID: com.arvasyn.testing
+    name: Testing App
+    icon: icon.png
+    entrypoint: Application
+
+Store:
+    author:
+        ID: com.arvasyn
+        type: organization
+    description: |
+        Meow
+    versions:
+        -   version: 1.0.0
+            date: 2025-07-01
+            private: true
+            description: |
+                Initial release
+        -   version: 1.1.0
+            date: 2023-07-02
+            private: false
+            description: |
+                Update
+    gallery:
+        -   name: Screenshot 1
+            type: screenshot
+            file: screenshot1.png
+        -   name: Screenshot 2
+            type: screenshot
+            file: screenshot2.png
+
+Permissions:
+    -   ID: com.arvasyn.testing.permission.FILE_ACCESS
+        permission: FILE_ACCESS
+        reason: |
+            This is a reason
+        data:
+            paths:
+                -   ~/Downloads
+                -   ~/Documents
