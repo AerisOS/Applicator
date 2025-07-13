@@ -22,7 +22,7 @@ jobs:
         go-version: '1.24'
 
     - name: Build
-      run: go build -v Source/Main.go -o Applicator
+      run: go build -o Applicator -v Source/Main.go
 
     - name: Release
       uses: softprops/action-gh-release@v2
