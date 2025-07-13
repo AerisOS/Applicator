@@ -122,7 +122,7 @@ var Run = &cobra.Command{
 		Args = append(CustomPermissions, Args...)
 
 		Command := execute.ExecTask{
-			Command: "orb bwrap",
+			Command: "bwrap",
 			Args:    Args,
 			Shell:   true,
 		}
