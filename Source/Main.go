@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"github.com/AerisHQ/Applicator/Source/Commands"
-	"github.com/charmbracelet/fang"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 	"os"
@@ -30,9 +28,7 @@ func main() {
 	rootCmd.AddCommand(Commands.Version)
 	rootCmd.AddCommand(Commands.Run)
 
-	fang.WithVersion("v0.1.0")
-
-	if err := fang.Execute(context.Background(), rootCmd); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		logger.Error("Error executing command", "error", err)
 		os.Exit(1)
 	}
