@@ -24,6 +24,9 @@ jobs:
     - name: Tidy dependencies
       run: go mod tidy
 
+    - name: Install dependencies
+      run: go get -v ./...
+
     - name: Build
       run: go build -o Applicator -v Source/Main.go
 
