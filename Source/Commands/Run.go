@@ -115,7 +115,7 @@ var Run = &cobra.Command{
 		Args = append(CLIArguments, Args...)
 
 		Command := execute.ExecTask{
-			Command: "orb bwrap",
+			Command: "bwrap",
 			Args:    Args,
 			Shell:   true,
 		}
