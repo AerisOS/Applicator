@@ -78,7 +78,7 @@ var Run = &cobra.Command{
 
 		Logger.Debugf("Manifest file contents: %s", Manifest)
 		Logger.Debug("Parsing permissions from manifest", "permissions", Manifest.Permissions)
-		DidUserGrantPermissions, CLIArguments, PermissionsGranted := Utilities.HandlePermissions(*Manifest)
+		DidUserGrantPermissions, CLIArguments, PermissionsGranted := Utilities.HandlePermissions(*Manifest, ignorePrompts)
 
 		fmt.Println("Permissions Granted:", PermissionsGranted)
 		fmt.Println(Manifest.Permissions)

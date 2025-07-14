@@ -8,7 +8,11 @@ import (
 	"strings"
 )
 
-func PermissionPopup(ApplicationName string, Permission Types.Permission, SpecificData string) bool {
+func PermissionPopup(ApplicationName string, Permission Types.Permission, SpecificData string, IgnorePrompts bool) bool {
+	if IgnorePrompts {
+		return true
+	}
+
 	var Message string
 
 	switch Permission.Permission {

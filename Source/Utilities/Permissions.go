@@ -26,7 +26,7 @@ var BlacklistedPaths = []string{
 
 /* The PermissionPopup function is located in Source/Utilities/PermissionPopup.go */
 
-func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
+func HandlePermissions(Manifest Types.Manifest, IgnorePrompts bool) (bool, []string, []string) {
 	if Manifest.Permissions == nil || len(Manifest.Permissions) == 0 {
 		return true, []string{}, []string{}
 	}
@@ -46,7 +46,7 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 					if !slices.Contains(BlacklistedPaths, path.(string)) {
 						pathStr := strings.Replace(path.(string), "~", os.Getenv("HOME"), -1)
 
-						if PermissionPopup(Manifest.Application.Name, permission, pathStr) {
+						if PermissionPopup(Manifest.Application.Name, permission, pathStr, IgnorePrompts) {
 							CLIArguments = append(CLIArguments, "--bind", pathStr, pathStr)
 							PermissionsGranted = append(PermissionsGranted, "FILE_ACCESS:"+pathStr)
 						}
@@ -56,7 +56,7 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 				return false, []string{}, []string{}
 			}
 		case "SYSTEM_PROCESSES":
-			if PermissionPopup(Manifest.Application.Name, permission, "System processes") {
+			if PermissionPopup(Manifest.Application.Name, permission, "System processes", IgnorePrompts) {
 				CLIArguments = append(CLIArguments, "--proc", "/proc")
 				PermissionsGranted = append(PermissionsGranted, "SYSTEM_PROCESSES")
 			}
