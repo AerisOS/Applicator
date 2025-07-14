@@ -2,7 +2,6 @@ package Utilities
 
 import (
 	"github.com/AerisHQ/Applicator/Source/Types"
-	"github.com/sqweek/dialog"
 	"os"
 	"slices"
 	"strings"
@@ -25,6 +24,8 @@ var BlacklistedPaths = []string{
 	"/usr",
 }
 
+/* The PermissionPopup function is located in Source/Utilities/PermissionPopup.go */
+
 func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 	if Manifest.Permissions == nil || len(Manifest.Permissions) == 0 {
 		return true, []string{}, []string{}
@@ -45,7 +46,7 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 					if !slices.Contains(BlacklistedPaths, path.(string)) {
 						pathStr := strings.Replace(path.(string), "~", os.Getenv("HOME"), -1)
 
-						if AskForPermission(Manifest.Application.Name, permission, pathStr) {
+						if PermissionPopup(Manifest.Application.Name, permission, pathStr) {
 							CLIArguments = append(CLIArguments, "--bind", pathStr, pathStr)
 							PermissionsGranted = append(PermissionsGranted, "FILE_ACCESS:"+pathStr)
 						}
@@ -55,7 +56,7 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 				return false, []string{}, []string{}
 			}
 		case "SYSTEM_PROCESSES":
-			if AskForPermission(Manifest.Application.Name, permission, "System processes") {
+			if PermissionPopup(Manifest.Application.Name, permission, "System processes") {
 				CLIArguments = append(CLIArguments, "--proc", "/proc")
 				PermissionsGranted = append(PermissionsGranted, "SYSTEM_PROCESSES")
 			}
@@ -69,19 +70,4 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 	} else {
 		return false, []string{}, []string{}
 	}
-}
-
-func AskForPermission(ApplicationName string, Permission Types.Permission, SpecificData string) bool {
-	var Message string
-
-	switch Permission.Permission {
-	case "FILE_ACCESS":
-		Message = "'" + ApplicationName + "' is requesting access to the following folder:\n\n" + SpecificData + "\n\nDo you want to allow this application to access this folder?"
-	case "SYSTEM_PROCESSES":
-		Message = "'" + ApplicationName + "' is requesting access to system processes.\n\nThis will allow the application to interact with system processes, which may include reading process information or sending data to processes.\n\nDo you want to allow this application to access system processes?"
-	}
-
-	return dialog.Message(Message).
-		Title("An Application is requesting a permission").
-		YesNo()
 }
