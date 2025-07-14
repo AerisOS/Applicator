@@ -17,9 +17,9 @@ func PermissionPopup(ApplicationName string, Permission Types.Permission, Specif
 
 	switch Permission.Permission {
 	case "FILE_ACCESS":
-		Message = "'" + ApplicationName + "' is requesting access to the following folder:\n\n" + SpecificData + "\n\nDo you want to allow this application to access this folder?"
+		Message = "'" + ApplicationName + "' wants to access the following folder:\n\n" + SpecificData + "\n\nDo you want to allow this application to access this folder?"
 	case "SYSTEM_PROCESSES":
-		Message = "'" + ApplicationName + "' is requesting access to system processes.\n\nThis will allow the application to interact with system processes, which may include reading process information or sending data to processes.\n\nDo you want to allow this application to access system processes?"
+		Message = "'" + ApplicationName + "' wants to access system processes.\n\nThis will allow the application to interact with system processes, which may include reading process information or sending data to processes.\n\nDo you want to allow this application to access system processes?"
 	}
 
 	if os.Getenv("DISPLAY") != "" || os.Getenv("WAYLAND_DISPLAY") != "" {
