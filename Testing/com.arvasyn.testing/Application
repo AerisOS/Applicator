@@ -21,3 +21,8 @@ if __name__ == "__main__":
             print("No permissions have been granted.")
         else:
             print("Permissions granted:", os.getenv("PERMISSIONS_GRANTED"))
+
+    if os.access("/proc/cpuinfo", os.R_OK):
+        print("Yes, I have read access to /proc/cpuinfo.")
+    else:
+        print("No, I do not have read access to /proc/cpuinfo.")

@@ -7,10 +7,6 @@ import (
 	"os"
 )
 
-var (
-	verbose bool
-)
-
 func main() {
 	logger := log.NewWithOptions(os.Stdout, log.Options{
 		Level:        log.InfoLevel,

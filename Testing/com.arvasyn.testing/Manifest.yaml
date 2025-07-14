@@ -38,3 +38,7 @@ Permissions:
             paths:
                 -   ~/Downloads
                 -   ~/Documents
+    -   ID: com.arvasyn.testing.permission.SYSTEM_PROCESSES
+        permission: SYSTEM_PROCESSES
+        reason: |
+            This is a reason

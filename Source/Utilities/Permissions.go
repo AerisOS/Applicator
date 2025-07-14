@@ -30,6 +30,9 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 		return true, []string{}, []string{}
 	}
 
+	var CLIArguments []string
+	var PermissionsGranted []string
+
 	for _, permission := range Manifest.Permissions {
 		switch permission.Permission {
 		case "FILE_ACCESS":
@@ -37,8 +40,6 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 
 			if Properties["paths"] != nil {
 				paths := Properties["paths"].([]interface{})
-				var CLIArguments []string
-				var PermissionsGranted []string
 
 				for _, path := range paths {
 					if !slices.Contains(BlacklistedPaths, path.(string)) {
@@ -50,18 +51,24 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 						}
 					}
 				}
-
-				return true, CLIArguments, PermissionsGranted
 			} else {
 				return false, []string{}, []string{}
+			}
+		case "SYSTEM_PROCESSES":
+			if AskForPermission(Manifest.Application.Name, permission, "System processes") {
+				CLIArguments = append(CLIArguments, "--proc", "/proc")
+				PermissionsGranted = append(PermissionsGranted, "SYSTEM_PROCESSES")
 			}
 		default:
 			return false, []string{}, []string{}
 		}
-
 	}
 
-	return false, []string{}, []string{}
+	if len(PermissionsGranted) > 0 {
+		return true, CLIArguments, PermissionsGranted
+	} else {
+		return false, []string{}, []string{}
+	}
 }
 
 func AskForPermission(ApplicationName string, Permission Types.Permission, SpecificData string) bool {
@@ -70,6 +77,8 @@ func AskForPermission(ApplicationName string, Permission Types.Permission, Speci
 	switch Permission.Permission {
 	case "FILE_ACCESS":
 		Message = "'" + ApplicationName + "' is requesting access to the following folder:\n\n" + SpecificData + "\n\nDo you want to allow this application to access this folder?"
+	case "SYSTEM_PROCESSES":
+		Message = "'" + ApplicationName + "' is requesting access to system processes.\n\nThis will allow the application to interact with system processes, which may include reading process information or sending data to processes.\n\nDo you want to allow this application to access system processes?"
 	}
 
 	return dialog.Message(Message).
