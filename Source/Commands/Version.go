@@ -8,6 +8,6 @@ var Version = &cobra.Command{
 	Short:   "Display the version of Applicator",
 	Long:    "Display the current version of Applicator, including build information and commit hash.",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("Applicator v0.1.0")
+		cmd.Println("Applicator v0.2.0")
 	},
 }
