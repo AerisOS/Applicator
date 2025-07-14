@@ -6,8 +6,6 @@ if __name__ == "__main__":
     print("Current User:", os.getenv("USER"))
     print("User's Home Directory:", os.path.expanduser("~"))
 
-    print(os.listdir(os.path.expanduser("~")))
-
     if os.access(os.path.expanduser("~/Downloads"), os.R_OK):
         print("Yes, I have read access to Downloads.")
     else:
@@ -18,7 +16,8 @@ if __name__ == "__main__":
     else:
         print("No, I do not have read access to Documents.")
 
-    if os.access(os.path.expanduser("/sys"), os.R_OK):
-        print("Yes, I have read access to /sys.")
-    else:
-        print("No, I do not have read access to /sys.")
+    if os.getenv("PERMISSIONS_GRANTED") is not None:
+        if os.getenv("PERMISSIONS_GRANTED") == "...":
+            print("No permissions have been granted.")
+        else:
+            print("Permissions granted:", os.getenv("PERMISSIONS_GRANTED"))

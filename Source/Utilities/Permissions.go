@@ -25,9 +25,9 @@ var BlacklistedPaths = []string{
 	"/usr",
 }
 
-func HandlePermissions(Manifest Types.Manifest) (bool, []string) {
+func HandlePermissions(Manifest Types.Manifest) (bool, []string, []string) {
 	if Manifest.Permissions == nil || len(Manifest.Permissions) == 0 {
-		return true, []string{}
+		return true, []string{}, []string{}
 	}
 
 	for _, permission := range Manifest.Permissions {
@@ -37,29 +37,31 @@ func HandlePermissions(Manifest Types.Manifest) (bool, []string) {
 
 			if Properties["paths"] != nil {
 				paths := Properties["paths"].([]interface{})
-				var CustomPermissions []string
+				var CLIArguments []string
+				var PermissionsGranted []string
 
 				for _, path := range paths {
 					if !slices.Contains(BlacklistedPaths, path.(string)) {
 						pathStr := strings.Replace(path.(string), "~", os.Getenv("HOME"), -1)
 
 						if AskForPermission(Manifest.Application.Name, permission, pathStr) {
-							CustomPermissions = append(CustomPermissions, "--bind", pathStr, pathStr)
+							CLIArguments = append(CLIArguments, "--bind", pathStr, pathStr)
+							PermissionsGranted = append(PermissionsGranted, "FILE_ACCESS:"+pathStr)
 						}
 					}
 				}
 
-				return true, CustomPermissions
+				return true, CLIArguments, PermissionsGranted
 			} else {
-				return false, []string{"No paths specified for FILE_ACCESS permission"}
+				return false, []string{}, []string{}
 			}
 		default:
-			return false, []string{"Unknown permission requested: " + permission.Permission}
+			return false, []string{}, []string{}
 		}
 
 	}
 
-	return false, []string{}
+	return false, []string{}, []string{}
 }
 
 func AskForPermission(ApplicationName string, Permission Types.Permission, SpecificData string) bool {

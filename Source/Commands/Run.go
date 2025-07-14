@@ -7,8 +7,8 @@ import (
 	"github.com/alexellis/go-execute/v2"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
-	"github.com/sqweek/dialog"
 	"os"
+	"strings"
 )
 
 var (
@@ -18,21 +18,10 @@ var (
 	ignorePrompts bool
 
 	// Local Variables
-	ManifestPath  string
-	ManifestFound bool
+	ManifestPath             string
+	ManifestFound            bool
+	PermissionsGrantedString string
 )
-
-func AskPermission(name string, permission string, reason string) bool {
-	if ignorePrompts {
-		return true
-	}
-
-	result := dialog.Message("Do you want to give '" + name + "'  access to " + permission + "?\n\n" + reason).
-		Title("Permission Request").
-		YesNo()
-
-	return result
-}
 
 var Run = &cobra.Command{
 	Use:     "run",
@@ -88,25 +77,29 @@ var Run = &cobra.Command{
 		}
 
 		Logger.Debugf("Manifest file contents: %s", Manifest)
-
-		var CustomPermissions []string
-
 		Logger.Debug("Parsing permissions from manifest", "permissions", Manifest.Permissions)
-		DidUserGrantPermissions, CustomPermissions := Utilities.HandlePermissions(*Manifest)
+		DidUserGrantPermissions, CLIArguments, PermissionsGranted := Utilities.HandlePermissions(*Manifest)
 
-		fmt.Println("Custom Permissions:", CustomPermissions)
+		fmt.Println("Permissions Granted:", PermissionsGranted)
 		fmt.Println(Manifest.Permissions)
 
 		if !DidUserGrantPermissions {
 			Logger.Debug("User did not grant the required permissions for the application to run", "application", Manifest.Application.Name)
 		} else {
-			Logger.Debug("User granted permissions", "permissions", CustomPermissions)
+			Logger.Debug("User granted permissions", "permissions", PermissionsGranted)
+		}
+
+		if len(PermissionsGranted) > 0 {
+			/* We can't use ',' as a separator here because bubblewrap will error out */
+			PermissionsGrantedString = strings.Join(PermissionsGranted, "%")
+		} else {
+			PermissionsGrantedString = "..."
 		}
 
 		Args := []string{
 			"--setenv", "USER", os.Getenv("USER"),
 			"--setenv", "HOME", os.Getenv("HOME"),
-			"--setenv", "SANDBOXED", "true",
+			"--setenv", "PERMISSIONS_GRANTED", PermissionsGrantedString,
 			"--bind", ApplicationPath + "/Data", "/Data",
 			"--ro-bind", ApplicationPath, "/Application",
 			"--ro-bind /usr /usr",
@@ -119,10 +112,10 @@ var Run = &cobra.Command{
 			"/Application/" + Manifest.Application.Entrypoint,
 		}
 
-		Args = append(CustomPermissions, Args...)
+		Args = append(CLIArguments, Args...)
 
 		Command := execute.ExecTask{
-			Command: "bwrap",
+			Command: "orb bwrap",
 			Args:    Args,
 			Shell:   true,
 		}
